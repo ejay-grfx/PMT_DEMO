@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adobe Photoshop Basic Tools - Presentation & Activity Deck</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Photoshop Dark Theme & Clean High-Visibility Typography */
+    :root {
+      --ps-dark: #09090b;
+      --ps-card: #141418;
+      --ps-border: #282836;
+      --ps-blue: #007acc;
+      --ps-blue-bright: #31a8ff;
+    }
+
+    body {
+      background-color: var(--ps-dark);
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* Ambient Photoshop Grid Canvas Background */
+    .ps-canvas-bg {
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 122, 204, 0.08) 0%, transparent 70%),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.015) 25%, transparent 25%), 
+        linear-gradient(-45deg, rgba(255, 255, 255, 0.015) 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.015) 75%), 
+        linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.015) 75%);
+      background-size: 100% 100%, 36px 36px, 36px 36px, 36px 36px, 36px 36px;
+      background-position: 0 0, 0 0, 0 18px, 18px -18px, -18px 0px;
+    }
+
+    /* Giant Background Watermark Text */
+    .hero-watermark {
+      font-size: 15vw;
+      font-weight: 900;
+      line-height: 0.8;
+      letter-spacing: -0.04em;
+      color: rgba(255, 255, 255, 0.03);
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: all 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .watermark-morph {
+      animation: watermarkZoom 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes watermarkZoom {
+      0% {
+        transform: scale(0.85);
+        letter-spacing: 0.06em;
+        opacity: 0.01;
+      }
+      50% {
+        opacity: 0.045;
+      }
+      100% {
+        transform: scale(1);
+        letter-spacing: -0.04em;
+        opacity: 0.03;
+      }
+    }
+
+    /* Stage Perspective for 3D Transitions */
+    .stage-3d-wrapper {
+      perspective: 1400px;
+      perspective-origin: center center;
+      transform-style: preserve-3d;
+    }
+
+    /* Slide In / Out Directional 3D Parallax Animations */
+    @keyframes slideInFromRight {
+      0% {
+        opacity: 0;
+        transform: perspective(1400px) translateX(90px) translateZ(-70px) rotateY(-9deg) scale(0.93);
+        filter: blur(6px);
+      }
+      65% {
+        transform: perspective(1400px) translateX(-6px) translateZ(10px) rotateY(1deg) scale(1.01);
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(1400px) translateX(0) translateZ(0) rotateY(0deg) scale(1);
+        filter: blur(0px);
+      }
+    }
+    @keyframes slideInFromLeft {
+      0% {
+        opacity: 0;
+        transform: perspective(1400px) translateX(-90px) translateZ(-70px) rotateY(9deg) scale(0.93);
+        filter: blur(6px);
+      }
+      65% {
+        transform: perspective(1400px) translateX(6px) translateZ(10px) rotateY(-1deg) scale(1.01);
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(1400px) translateX(0) translateZ(0) rotateY(0deg) scale(1);
+        filter: blur(0px);
+      }
+    }
+    .anim-slide-in-right {
+      animation: slideInFromRight 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .anim-slide-in-left {
+      animation: slideInFromLeft 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Digital Laser Shutter Sweep (Beam Flare Across Screen) */
+    .laser-sweep {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 122, 204, 0.0) 25%, 
+        rgba(49, 168, 255, 0.3) 46%, 
+        rgba(255, 255, 255, 0.95) 50%, 
+        rgba(49, 168, 255, 0.3) 54%, 
+        rgba(0, 122, 204, 0.0) 75%, 
+        transparent 100%
+      );
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    .anim-laser-forward {
+      animation: laserSweepFwd 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    .anim-laser-backward {
+      animation: laserSweepBwd 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    @keyframes laserSweepFwd {
+      0% { opacity: 0; transform: translateX(-100%) skewX(-20deg); }
+      35% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(100%) skewX(-20deg); }
+    }
+    @keyframes laserSweepBwd {
+      0% { opacity: 0; transform: translateX(100%) skewX(20deg); }
+      35% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-100%) skewX(20deg); }
+    }
+
+    /* Tool Hero 3D Kinetic Morph Pop */
+    @keyframes iconMorphPop {
+      0% {
+        transform: scale(0.65) rotate(-12deg) translateY(20px);
+        opacity: 0;
+        filter: drop-shadow(0 0 0 transparent);
+      }
+      65% {
+        transform: scale(1.08) rotate(3deg) translateY(-6px);
+        filter: drop-shadow(0 0 45px rgba(49, 168, 255, 0.8));
+      }
+      100% {
+        transform: scale(1) rotate(0deg) translateY(0);
+        opacity: 1;
+        filter: drop-shadow(0 25px 60px rgba(0, 122, 204, 0.5));
+      }
+    }
+    .anim-icon-morph {
+      animation: iconMorphPop 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Shockwave Neon Ring Burst */
+    .shockwave-ring {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 9999px;
+      border: 3px solid #31a8ff;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 10;
+    }
+    .anim-shockwave {
+      animation: shockwaveExpand 0.75s cubic-bezier(0.1, 0.85, 0.3, 1) forwards;
+    }
+    @keyframes shockwaveExpand {
+      0% {
+        transform: scale(0.5);
+        opacity: 1;
+        box-shadow: 0 0 35px #31a8ff, inset 0 0 20px #31a8ff;
+      }
+      100% {
+        transform: scale(3.8);
+        opacity: 0;
+        box-shadow: 0 0 60px transparent, inset 0 0 30px transparent;
+      }
+    }
+
+    /* Smooth Gliding Tool Graphic Transition */
+    .tool-hero-container {
+      transition: all 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    /* Center State */
+    .state-centered {
+      transform: translateX(0%) scale(1.1);
+    }
+    /* Side State - Left (Gigilid sa Kaliwa -> Def sa Kanan) */
+    .state-side-left {
+      transform: translateX(-34%) scale(1.05);
+    }
+    /* Side State - Right (Gigilid sa Kanan -> Def sa Kaliwa) */
+    .state-side-right {
+      transform: translateX(34%) scale(1.05);
+    }
+
+    /* Definition Card Pop-Up Animations with 3D Depth */
+    .def-card-pop {
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-style: preserve-3d;
+    }
+    .def-hidden-right {
+      opacity: 0;
+      transform: perspective(1000px) translateX(120px) rotateY(-18deg) scale(0.88);
+      pointer-events: none;
+      filter: blur(8px);
+    }
+    .def-hidden-left {
+      opacity: 0;
+      transform: perspective(1000px) translateX(-120px) rotateY(18deg) scale(0.88);
+      pointer-events: none;
+      filter: blur(8px);
+    }
+    .def-visible {
+      opacity: 1;
+      transform: perspective(1000px) translateX(0px) rotateY(0deg) scale(1);
+      pointer-events: auto;
+      filter: blur(0px);
+    }
+
+    /* Staggered Children Animation */
+    .stagger-item {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: staggerFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .stagger-1 { animation-delay: 0.08s; }
+    .stagger-2 { animation-delay: 0.16s; }
+    .stagger-3 { animation-delay: 0.24s; }
+    .stagger-4 { animation-delay: 0.32s; }
+
+    @keyframes staggerFadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Floating Tool Icon Animation */
+    @keyframes icon-float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-12px) scale(1.03); }
+    }
+    .anim-icon-float {
+      animation: icon-float 4s ease-in-out infinite;
+    }
+
+    .blue-glow {
+      background: radial-gradient(circle, rgba(0, 122, 204, 0.35) 0%, rgba(49, 168, 255, 0.12) 45%, transparent 75%);
+    }
+
+    /* Keycap Styling */
+    .keycap-3d {
+      background: linear-gradient(180deg, #2b2b36 0%, #121218 100%);
+      box-shadow: 0 8px 0 #08080c, 0 12px 25px rgba(0, 122, 204, 0.4);
+    }
+
+    /* ========================================================
+       FUNCTIONAL TOOL MOTION ANIMATIONS (HOW EACH TOOL WORKS)
+       ======================================================== */
+
+    /* Move Tool: 4-Way Directional Arrows & Layer Bounding Box */
+    @keyframes moveDriftBox {
+      0%, 100% { transform: translate(0px, 0px); }
+      25% { transform: translate(14px, -12px); }
+      50% { transform: translate(-14px, 12px); }
+      75% { transform: translate(12px, 14px); }
+    }
+    @keyframes pulseArrowUp {
+      0%, 100% { transform: translateY(0); opacity: 0.35; }
+      50% { transform: translateY(-10px); opacity: 1; filter: drop-shadow(0 0 10px #31a8ff); }
+    }
+    @keyframes pulseArrowDown {
+      0%, 100% { transform: translateY(0); opacity: 0.35; }
+      50% { transform: translateY(10px); opacity: 1; filter: drop-shadow(0 0 10px #31a8ff); }
+    }
+    @keyframes pulseArrowLeft {
+      0%, 100% { transform: translateX(0); opacity: 0.35; }
+      50% { transform: translateX(-10px); opacity: 1; filter: drop-shadow(0 0 10px #31a8ff); }
+    }
+    @keyframes pulseArrowRight {
+      0%, 100% { transform: translateX(0); opacity: 0.35; }
+      50% { transform: translateX(10px); opacity: 1; filter: drop-shadow(0 0 10px #31a8ff); }
+    }
+
+    /* Marquee Tool: Marching Ants Dash Loop */
+    @keyframes marchingAntsLoop {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: 36; }
+    }
+    @keyframes marqueeGlowPulse {
+      0%, 100% { transform: scale(1); opacity: 0.75; }
+      50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 18px rgba(49, 168, 255, 0.7)); }
+    }
+
+    /* Lasso Tool: Glowing Freehand Rope Path & Orbit Knot */
+    @keyframes lassoStrokeDraw {
+      0% { stroke-dashoffset: 800; opacity: 0.3; }
+      45% { stroke-dashoffset: 0; opacity: 1; }
+      70% { stroke-dashoffset: 0; opacity: 1; filter: drop-shadow(0 0 14px #31a8ff); }
+      100% { stroke-dashoffset: -800; opacity: 0.3; }
+    }
+    @keyframes lassoOrbitSparkle {
+      0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+    }
+
+    /* Crop Tool: Bounding Squeeze & Rule-of-Thirds Grid */
+    @keyframes cropBoundingCycle {
+      0%, 100% { transform: scale(1.08); }
+      50% { transform: scale(0.92); }
+    }
+    @keyframes cropGridBreathe {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.9; }
+    }
+
+    /* Brush Tool: Paint Splash Arc & Color Droplets */
+    @keyframes paintStrokeDraw {
+      0% { stroke-dashoffset: 700; opacity: 0.2; }
+      50% { stroke-dashoffset: 0; opacity: 1; filter: drop-shadow(0 0 15px #ff007f); }
+      100% { stroke-dashoffset: -700; opacity: 0.2; }
+    }
+    @keyframes paintOrbitSwirl {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes brushTipPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* Eraser Tool: Transparency Pattern Wipe & Pixel Dissolve */
+    @keyframes eraserWipeBar {
+      0%, 100% { transform: translateX(-50px) rotate(-15deg); opacity: 0.3; }
+      50% { transform: translateX(50px) rotate(15deg); opacity: 1; }
+    }
+    @keyframes pixelParticleFade1 {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+      100% { transform: translate(45px, -35px) scale(0); opacity: 0; }
+    }
+    @keyframes pixelParticleFade2 {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+      100% { transform: translate(-40px, 35px) scale(0); opacity: 0; }
+    }
+    @keyframes pixelParticleFade3 {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+      100% { transform: translate(35px, 40px) scale(0); opacity: 0; }
+    }
+
+    /* Type Tool: Typing Text Animation & Floating Glyphs */
+    @keyframes typingTextPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    @keyframes floatGlyphLetter {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
+      50% { transform: translateY(-16px) rotate(8deg); opacity: 1; filter: drop-shadow(0 0 10px #31a8ff); }
+    }
+
+    /* Zoom Tool: Expanding Optical Radar Waves */
+    @keyframes zoomRadarRings {
+      0% { transform: scale(0.65); opacity: 0.9; }
+      100% { transform: scale(1.65); opacity: 0; }
+    }
+    @keyframes zoomGridMagnify {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+  </style>
+</head>
+<body class="ps-canvas-bg h-screen flex flex-col justify-between px-3 py-1.5 md:px-6 md:py-2.5 lg:px-8 lg:py-3 relative select-none overflow-hidden">
+
+  <!-- DIGITAL LASER SHUTTER SWEEP OVERLAY -->
+  <div id="laser-sweep" class="laser-sweep"></div>
+
+  <!-- BACKGROUND WATERMARK TEXT -->
+  <div class="absolute inset-0 flex items-center justify-center overflow-hidden z-0">
+    <div id="watermark-text" class="hero-watermark">PHOTOSHOP</div>
+  </div>
+
+  <!-- TOP NAVBAR -->
+  <header class="relative z-20 flex items-center justify-between border-b-2 border-[#282836] pb-2 md:pb-2.5">
+    <!-- Photoshop Brand Logo -->
+    <div class="flex items-center gap-3 md:gap-4 cursor-pointer" onclick="goToSlide(0)">
+      <div class="bg-[#001e36] text-[#31a8ff] font-black text-2xl md:text-3xl px-3 py-1 md:px-3.5 md:py-1 rounded-2xl border-2 border-[#004e8c] shadow-[0_0_20px_rgba(0,122,204,0.4)]">
+        Ps
+      </div>
+      <div>
+        <h1 class="font-black text-lg md:text-2xl tracking-tight text-white leading-none">
+          Adobe Photoshop <span class="text-[#31a8ff]">Tools</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Right Controls: FX Badge & Auto Play Button -->
+    <div class="flex items-center gap-2.5 md:gap-3">
+      <div class="hidden sm:flex items-center gap-2 bg-[#141418] border border-[#282836] px-3 py-1 rounded-full text-xs font-bold text-gray-300 shadow">
+        <span class="w-2 h-2 rounded-full bg-[#31a8ff] shadow-[0_0_8px_#31a8ff]"></span>
+        <span>Cinematic 3D Transitions</span>
+      </div>
+
+      <button id="auto-play-btn" class="bg-[#007acc] hover:bg-[#31a8ff] text-white px-4 py-1.5 md:px-6 md:py-2 rounded-full font-black text-xs md:text-base flex items-center gap-2 shadow-[0_0_15px_rgba(0,122,204,0.5)] transition transform active:scale-95 border border-[#31a8ff]/50">
+        <svg id="play-icon" class="w-3.5 h-3.5 md:w-4 md:h-4 fill-current" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.333-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"/></svg>
+        <span id="play-text">Auto Play</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN HERO CENTER STAGE -->
+  <main class="relative z-10 flex-1 my-1 md:my-2 flex items-center justify-center overflow-hidden">
+    
+    <!-- CENTRAL BLUE RADIAL GLOW -->
+    <div class="absolute inset-0 blue-glow pointer-events-none"></div>
+
+    <!-- DYNAMIC STAGE CONTAINER FOR STANDARD SLIDES (0-11) -->
+    <div id="standard-stage" class="stage-3d-wrapper w-full max-w-[96vw] xl:max-w-[95vw] h-full flex items-center justify-between relative px-2 md:px-6">
+      
+      <!-- TOOL GRAPHIC CONTAINER -->
+      <div id="tool-hero" class="tool-hero-container state-centered absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
+        <!-- Shockwave Ring Aura -->
+        <div id="shockwave-ring" class="shockwave-ring"></div>
+
+        <!-- Authentic Photoshop Icon Box -->
+        <div id="graphic-box" class="anim-icon-float flex items-center justify-center drop-shadow-[0_30px_70px_rgba(0,122,204,0.5)]">
+          <!-- Injected Dynamically -->
+        </div>
+
+        <button id="reveal-def-btn" class="pointer-events-auto mt-5 md:mt-8 bg-[#007acc] hover:bg-[#31a8ff] text-white font-black text-base md:text-2xl px-8 py-3.5 md:px-12 md:py-5 rounded-2xl shadow-[0_15px_40px_rgba(0,122,204,0.6)] backdrop-blur transition transform hover:scale-105 active:scale-95 flex items-center gap-3.5 border-2 border-[#31a8ff]">
+          <span>Click to Reveal Function</span>
+          <svg class="w-6 h-6 md:w-7 md:h-7 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      <!-- POP-UP DEFINITION CARD (MAXIMIZED GIANT CLASSROOM TYPOGRAPHY) -->
+      <div id="def-card" class="def-card-pop def-hidden-right ml-auto w-full lg:w-[62%] xl:w-[63%] bg-[#141418]/95 backdrop-blur-2xl border-4 border-[#282836] p-5 md:p-7 lg:p-8 xl:p-9 rounded-3xl shadow-[0_30px_80px_rgba(0,0,0,0.9)] z-30 max-h-[86vh] overflow-y-auto">
+        <!-- Injected Dynamically -->
+      </div>
+
+    </div>
+
+    <!-- SPECIAL STAGE CONTAINER FOR LESSON ACTIVITIES (SLIDES 12, 13, 14, 15) -->
+    <div id="activity-stage" class="w-full max-w-[94vw] xl:max-w-[92vw] flex flex-col justify-center items-stretch gap-4 lg:gap-6 my-auto hidden z-30 p-2 md:p-4 overflow-y-auto max-h-[86vh]">
+      <!-- Dynamically Injected Activity Content -->
+    </div>
+
+  </main>
+
+  <!-- FOOTER NAVIGATION -->
+  <footer class="relative z-20 flex items-center justify-between border-t-2 border-[#282836] pt-1.5 md:pt-2.5">
+    
+    <!-- Tool Thumbnails Strip -->
+    <div id="thumb-strip" class="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-2xl lg:max-w-3xl">
+      <!-- Injected Dynamically -->
+    </div>
+
+    <!-- Compact Navigation Buttons -->
+    <div class="flex items-center gap-2 md:gap-3">
+      <span id="slide-count" class="text-xs md:text-sm font-black text-gray-200 font-mono mr-0.5 bg-[#141418] px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg border border-[#282836]">1 / 14</span>
+
+      <button id="prev-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#141418] border-2 border-[#282836] hover:border-[#31a8ff] hover:bg-[#007acc] text-white flex items-center justify-center transition shadow-md transform active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed" title="Previous Slide">
+        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+
+      <button id="next-btn" class="w-9 h-9 md:w-11 md:h-11 rounded-xl bg-[#007acc] hover:bg-[#31a8ff] text-white flex items-center justify-center transition shadow-[0_0_20px_rgba(0,122,204,0.7)] transform hover:scale-105 active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed border-2 border-[#31a8ff]" title="Next Slide / Action">
+        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+  </footer>
+
+  <!-- PRESENTATION SCRIPT ENGINE WITH AUTHENTIC PHOTOSHOP TOOL ICONS -->
+  <script>
+    // AUTHENTIC PHOTOSHOP UI TOOL ICON SVGS
+    // AUTHENTIC PHOTOSHOP UI TOOL ICON SVGS WITH FUNCTIONAL MOTION GRAPHICS
+    const psToolIcons = {
+      cover: `
+        <div class="relative flex items-center justify-center">
+          <!-- Orbiting Creative Constellation Rings -->
+          <div class="absolute -inset-10 md:-inset-14 rounded-full border-2 border-dashed border-[#31a8ff]/40 pointer-events-none" style="animation: paintOrbitSwirl 24s linear infinite;"></div>
+          <div class="absolute -inset-16 md:-inset-20 rounded-full border border-[#007acc]/20 pointer-events-none" style="animation: paintOrbitSwirl 36s linear reverse infinite;"></div>
+
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#001e36] border-4 border-[#31a8ff] rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center shadow-[0_20px_60px_rgba(0,122,204,0.6)] relative z-10">
+            <div class="text-[#31a8ff] font-black text-8xl md:text-9xl lg:text-[11rem] tracking-tighter mb-2 drop-shadow-[0_0_35px_rgba(49,168,255,0.8)]">Ps</div>
+            <span class="text-white text-lg md:text-2xl font-black text-center tracking-wider uppercase bg-[#007acc] px-5 py-2 rounded-full shadow-lg border border-[#31a8ff]">Adobe Photoshop</span>
+          </div>
+        </div>
+      `,
+      objectives: `
+        <div class="relative flex items-center justify-center">
+          <!-- Bullseye Focus Rings -->
+          <div class="absolute -inset-10 md:-inset-14 rounded-full border-2 border-dashed border-[#31a8ff]/40 pointer-events-none" style="animation: paintOrbitSwirl 25s linear infinite;"></div>
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#383838] border-4 border-[#31a8ff] rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center shadow-2xl relative z-10">
+            <div class="text-6xl md:text-8xl lg:text-9xl mb-3" style="animation: icon-float 3s ease-in-out infinite;">🎯</div>
+            <span class="text-white text-2xl md:text-3xl lg:text-4xl font-black text-center">Learning Objectives</span>
+          </div>
+        </div>
+      `,
+      move: `
+        <div class="relative flex items-center justify-center">
+          <!-- 4-Way Directional Arrows Pulsing Outward -->
+          <div class="absolute -top-12 left-1/2 -translate-x-1/2 text-[#31a8ff] text-3xl font-black pointer-events-none" style="animation: pulseArrowUp 1.8s ease-in-out infinite;">▲</div>
+          <div class="absolute -bottom-14 left-1/2 -translate-x-1/2 text-[#31a8ff] text-3xl font-black pointer-events-none" style="animation: pulseArrowDown 1.8s ease-in-out infinite;">▼</div>
+          <div class="absolute top-1/2 -left-14 -translate-y-1/2 text-[#31a8ff] text-3xl font-black pointer-events-none" style="animation: pulseArrowLeft 1.8s ease-in-out infinite;">◀</div>
+          <div class="absolute top-1/2 -right-14 -translate-y-1/2 text-[#31a8ff] text-3xl font-black pointer-events-none" style="animation: pulseArrowRight 1.8s ease-in-out infinite;">▶</div>
+
+          <!-- Drifting Layer Bounding Box (Simulating Grabbing & Dragging Layers) -->
+          <div class="absolute -inset-6 md:-inset-8 border-2 border-dashed border-[#31a8ff]/80 rounded-3xl pointer-events-none shadow-[0_0_20px_rgba(49,168,255,0.3)]" style="animation: moveDriftBox 4s ease-in-out infinite;">
+            <!-- 4 Blue Corner Anchor Handles -->
+            <div class="absolute -top-2 -left-2 w-4 h-4 bg-[#31a8ff] border-2 border-white rounded-sm shadow-[0_0_8px_#31a8ff]"></div>
+            <div class="absolute -top-2 -right-2 w-4 h-4 bg-[#31a8ff] border-2 border-white rounded-sm shadow-[0_0_8px_#31a8ff]"></div>
+            <div class="absolute -bottom-2 -left-2 w-4 h-4 bg-[#31a8ff] border-2 border-white rounded-sm shadow-[0_0_8px_#31a8ff]"></div>
+            <div class="absolute -bottom-2 -right-2 w-4 h-4 bg-[#31a8ff] border-2 border-white rounded-sm shadow-[0_0_8px_#31a8ff]"></div>
+          </div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M50 12 L38 28 L46 28 L46 46 L28 46 L28 38 L12 50 L28 62 L28 54 L46 54 L46 72 L38 72 L50 88 L62 72 L54 72 L54 54 L72 54 L72 62 L88 50 L72 38 L72 46 L54 46 L54 28 L62 28 Z"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      marquee: `
+        <div class="relative flex items-center justify-center">
+          <!-- Giant Animated Marching Ants Outer Selection Frame -->
+          <div class="absolute -inset-7 md:-inset-10 border-4 border-dashed border-white rounded-3xl pointer-events-none" style="stroke-dasharray: 12 8; animation: marqueeGlowPulse 2.8s ease-in-out infinite;">
+            <!-- Corner Crosshairs -->
+            <div class="absolute -top-3 -left-3 text-[#31a8ff] font-mono text-xl font-black">⌜</div>
+            <div class="absolute -top-3 -right-3 text-[#31a8ff] font-mono text-xl font-black">⌝</div>
+            <div class="absolute -bottom-3 -left-3 text-[#31a8ff] font-mono text-xl font-black">⌞</div>
+            <div class="absolute -bottom-3 -right-3 text-[#31a8ff] font-mono text-xl font-black">⌟</div>
+          </div>
+
+          <!-- Translucent Cyan Selection Zone Tint -->
+          <div class="absolute -inset-5 rounded-2xl bg-[#007acc]/10 border border-[#31a8ff]/30 pointer-events-none"></div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+              <rect x="20" y="25" width="60" height="50" rx="4" stroke-width="7" stroke-dasharray="10 8" style="animation: marchingAntsLoop 1.2s linear infinite;"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      lasso: `
+        <div class="relative flex items-center justify-center">
+          <!-- Glowing Freehand Winding Lasso Loop -->
+          <svg class="absolute -inset-8 md:-inset-12 w-[calc(100%+4rem)] md:w-[calc(100%+6rem)] h-[calc(100%+4rem)] md:h-[calc(100%+6rem)] pointer-events-none z-0" viewBox="0 0 400 400">
+            <path d="M 60 80 C 180 30, 320 50, 350 140 C 380 250, 330 350, 230 360 C 120 370, 40 310, 40 210 C 40 120, 110 60, 240 60" fill="none" stroke="#31a8ff" stroke-width="5" stroke-dasharray="14 10" stroke-linecap="round" style="stroke-dasharray: 800; animation: lassoStrokeDraw 3.8s ease-in-out infinite; filter: drop-shadow(0 0 14px #31a8ff);"/>
+          </svg>
+
+          <!-- Orbiting Knot / Pencil Tracer Sparkle -->
+          <div class="absolute inset-0 pointer-events-none flex items-center justify-center z-20" style="animation: lassoOrbitSparkle 3.8s linear infinite;">
+            <div class="w-5 h-5 rounded-full bg-white border-2 border-[#31a8ff] shadow-[0_0_15px_#31a8ff]"></div>
+          </div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 55 22 C 78 22, 88 48, 72 68 C 55 88, 25 75, 25 52 C 25 32, 38 22, 55 22 Z"/>
+              <path d="M 32 68 C 22 76, 28 88, 38 82"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      crop: `
+        <div class="relative flex items-center justify-center">
+          <!-- Active Trimming Rule of Thirds Bounding Grid -->
+          <div class="absolute -inset-6 md:-inset-9 pointer-events-none z-20" style="animation: cropBoundingCycle 3.5s ease-in-out infinite;">
+            <!-- 3x3 Grid Lines -->
+            <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 border-2 border-white/70 rounded-2xl bg-[#001e36]/15" style="animation: cropGridBreathe 3.5s ease-in-out infinite;">
+              <div class="border-r border-b border-[#31a8ff]/40"></div><div class="border-r border-b border-[#31a8ff]/40"></div><div class="border-b border-[#31a8ff]/40"></div>
+              <div class="border-r border-b border-[#31a8ff]/40"></div><div class="border-r border-b border-[#31a8ff]/40"></div><div class="border-b border-[#31a8ff]/40"></div>
+              <div class="border-r border-[#31a8ff]/40"></div><div class="border-r border-[#31a8ff]/40"></div><div></div>
+            </div>
+            <!-- 4 Heavy Crop Corner Brackets -->
+            <div class="absolute -top-3 -left-3 w-8 h-8 border-t-4 border-l-4 border-white shadow-[0_0_12px_#31a8ff]"></div>
+            <div class="absolute -top-3 -right-3 w-8 h-8 border-t-4 border-r-4 border-white shadow-[0_0_12px_#31a8ff]"></div>
+            <div class="absolute -bottom-3 -left-3 w-8 h-8 border-b-4 border-l-4 border-white shadow-[0_0_12px_#31a8ff]"></div>
+            <div class="absolute -bottom-3 -right-3 w-8 h-8 border-b-4 border-r-4 border-white shadow-[0_0_12px_#31a8ff]"></div>
+          </div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M 28 15 L 36 15 L 36 28 L 72 28 C 76 28, 78 30, 78 34 L 78 70 L 90 70 L 90 78 L 78 78 L 78 90 L 70 90 L 70 78 L 34 78 C 30 78, 28 76, 28 72 L 28 36 L 15 36 L 15 28 L 28 28 Z M 36 36 L 36 70 L 70 70 L 70 36 Z"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      brush: `
+        <div class="relative flex items-center justify-center">
+          <!-- Multi-Color Paint Arc Sweeping Around Brush Tip -->
+          <svg class="absolute -inset-8 md:-inset-12 w-[calc(100%+4rem)] md:w-[calc(100%+6rem)] h-[calc(100%+4rem)] md:h-[calc(100%+6rem)] pointer-events-none z-20" viewBox="0 0 400 400">
+            <defs>
+              <linearGradient id="brushPaintNeon" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f0ff" />
+                <stop offset="50%" stop-color="#ff007f" />
+                <stop offset="100%" stop-color="#ffea00" />
+              </linearGradient>
+            </defs>
+            <path d="M 80 320 C 30 190, 80 60, 230 40 C 340 30, 380 150, 330 270" fill="none" stroke="url(#brushPaintNeon)" stroke-width="14" stroke-linecap="round" style="stroke-dasharray: 700; animation: paintStrokeDraw 3.2s ease-in-out infinite;" />
+          </svg>
+
+          <!-- Swirling Paint Droplets -->
+          <div class="absolute inset-0 pointer-events-none z-20" style="animation: paintOrbitSwirl 6s linear infinite;">
+            <div class="absolute top-2 left-10 w-6 h-6 rounded-full bg-[#00f0ff] shadow-[0_0_18px_#00f0ff]"></div>
+            <div class="absolute bottom-6 right-8 w-7 h-7 rounded-full bg-[#ff007f] shadow-[0_0_18px_#ff007f]"></div>
+            <div class="absolute top-1/2 -right-5 w-5 h-5 rounded-full bg-[#ffea00] shadow-[0_0_18px_#ffea00]"></div>
+          </div>
+
+          <!-- Pulsing Brush Cursor Size Ring -->
+          <div class="absolute bottom-8 left-8 w-16 h-16 rounded-full border-2 border-dashed border-[#00f0ff] pointer-events-none z-20" style="animation: brushTipPulse 1.8s ease-in-out infinite;"></div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M 78 14 C 82 18, 85 23, 85 27 C 85 30, 81 34, 76 39 L 55 60 L 40 45 L 61 24 C 66 19, 73 14, 78 14 Z"/>
+              <path d="M 52 63 L 37 48 L 30 55 L 45 70 Z" opacity="0.9"/>
+              <path d="M 28 57 L 43 72 C 43 72, 33 86, 22 88 C 14 89, 11 84, 13 77 C 16 66, 28 57, 28 57 Z"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      eraser: `
+        <div class="relative flex items-center justify-center">
+          <!-- Transparency Checkerboard Reveal Patch -->
+          <div class="absolute top-4 right-4 w-32 h-32 rounded-3xl opacity-60 border-2 border-white/30 overflow-hidden pointer-events-none ps-canvas-bg shadow-inner z-0"></div>
+
+          <!-- Eraser Sweep Wipe Bar Motion -->
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+            <div class="w-56 h-12 border-2 border-[#31a8ff] bg-[#31a8ff]/25 backdrop-blur rounded-full shadow-[0_0_25px_#31a8ff]" style="animation: eraserWipeBar 2.5s ease-in-out infinite;"></div>
+          </div>
+
+          <!-- Dissolving Pixel Particles (Crumbs) -->
+          <div class="absolute bottom-10 left-10 w-4 h-4 bg-white shadow-[0_0_10px_#ffffff] rounded-sm pointer-events-none z-20" style="animation: pixelParticleFade1 1.6s ease-out infinite;"></div>
+          <div class="absolute bottom-14 left-16 w-5 h-5 bg-[#31a8ff] shadow-[0_0_10px_#31a8ff] rounded-sm pointer-events-none z-20" style="animation: pixelParticleFade2 2s ease-out infinite; animation-delay: 0.35s;"></div>
+          <div class="absolute bottom-6 left-24 w-3 h-3 bg-gray-200 rounded-sm pointer-events-none z-20" style="animation: pixelParticleFade3 1.8s ease-out infinite; animation-delay: 0.7s;"></div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M 54 14 L 84 44 C 88 48, 88 54, 84 58 L 48 94 C 44 98, 38 98, 34 94 L 14 74 C 10 70, 10 64, 14 60 L 46 14 C 50 10, 52 10, 54 14 Z M 32 50 L 50 68 L 74 44 L 56 26 Z"/>
+              <path d="M 32 50 L 50 68 L 43 75 L 25 57 Z" opacity="0.6"/>
+              <path d="M 12 88 L 56 88" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      type: `
+        <div class="relative flex items-center justify-center">
+          <!-- Active Typing & Erasing Text Banner Above the Icon (HELLO WORLD) -->
+          <div class="absolute -top-12 bg-[#141418] border-2 border-[#31a8ff] text-white px-6 py-2.5 rounded-2xl text-lg md:text-2xl font-mono font-black shadow-[0_0_25px_rgba(49,168,255,0.7)] flex items-center min-w-[260px] md:min-w-[320px] justify-center pointer-events-none z-20">
+            <span id="typewriter-text" class="tracking-wider">HELLO WORLD</span><span class="w-1.5 h-6 md:h-7 bg-[#31a8ff] inline-block ml-1.5 animate-pulse shadow-[0_0_8px_#31a8ff]"></span>
+          </div>
+
+          <!-- Floating Typography Glyphs Orbiting Around -->
+          <div class="absolute -left-12 top-10 text-4xl md:text-5xl text-[#31a8ff] font-serif font-black pointer-events-none z-20" style="animation: floatGlyphLetter 2.4s ease-in-out infinite;">A</div>
+          <div class="absolute -right-12 top-16 text-4xl md:text-5xl text-amber-300 font-serif font-black pointer-events-none z-20" style="animation: floatGlyphLetter 2.8s ease-in-out infinite; animation-delay: 0.4s;">g</div>
+          <div class="absolute -left-10 bottom-12 text-3xl md:text-4xl text-purple-400 font-mono font-black pointer-events-none z-20" style="animation: floatGlyphLetter 3s ease-in-out infinite; animation-delay: 0.8s;">¶</div>
+          <div class="absolute -right-10 bottom-8 text-3xl md:text-4xl text-emerald-400 font-sans font-black pointer-events-none z-20" style="animation: floatGlyphLetter 2.2s ease-in-out infinite; animation-delay: 1.2s;">T</div>
+
+          <!-- Typographic Baseline Bracket Lines -->
+          <div class="absolute -inset-6 border-b-2 border-t-2 border-[#31a8ff]/40 flex justify-between items-center px-3 pointer-events-none z-0">
+            <span class="text-xs text-[#31a8ff] font-mono tracking-widest">ASCENDER</span>
+            <span class="text-xs text-[#31a8ff] font-mono tracking-widest">BASELINE</span>
+          </div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M 18 20 L 82 20 L 82 36 L 68 36 L 56 36 L 56 82 L 44 82 L 44 36 L 32 36 L 18 36 Z"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      zoom: `
+        <div class="relative flex items-center justify-center">
+          <!-- 3 Concentric Expanding Optical Radar Ripples -->
+          <div class="absolute -inset-6 rounded-full border-2 border-[#31a8ff]/70 pointer-events-none z-0" style="animation: zoomRadarRings 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;"></div>
+          <div class="absolute -inset-6 rounded-full border-2 border-[#31a8ff]/70 pointer-events-none z-0" style="animation: zoomRadarRings 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite; animation-delay: 0.9s;"></div>
+          <div class="absolute -inset-6 rounded-full border-2 border-[#31a8ff]/70 pointer-events-none z-0" style="animation: zoomRadarRings 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite; animation-delay: 1.8s;"></div>
+
+          <!-- Floating [+] and [-] Magnification Badges -->
+          <div class="absolute -top-7 -right-7 bg-[#007acc] text-white text-xl md:text-2xl font-mono font-black w-12 h-12 md:w-14 md:h-14 rounded-2xl border-2 border-white flex items-center justify-center shadow-[0_0_20px_#31a8ff] pointer-events-none z-20" style="animation: icon-float 3s ease-in-out infinite;">+</div>
+          <div class="absolute -bottom-7 -left-7 bg-[#282836] text-gray-200 text-xl md:text-2xl font-mono font-black w-12 h-12 md:w-14 md:h-14 rounded-2xl border-2 border-gray-400 flex items-center justify-center shadow-lg pointer-events-none z-20" style="animation: icon-float 3s ease-in-out infinite; animation-delay: 1.5s;">−</div>
+
+          <!-- Main Tool Icon Box -->
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#424242] border-4 border-[#5a5a5a] rounded-3xl p-8 flex items-center justify-center shadow-2xl relative z-10" style="animation: zoomGridMagnify 4s ease-in-out infinite;">
+            <svg class="w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-88 xl:h-88 text-[#ffffff] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M 42 16 C 27.6 16, 16 27.6, 16 42 C 16 56.4, 27.6 68, 42 68 C 47.5 68, 52.6 66.3, 56.8 63.4 L 78.4 85 C 80.3 86.9, 83.5 86.9, 85.4 85 L 85 85 C 86.9 83.1, 86.9 79.9, 85 78 L 63.4 56.4 C 66.3 52.2, 68 47.1, 68 42 C 68 27.6, 56.4 16, 42 16 Z M 42 26 C 50.8 26, 58 33.2, 58 42 C 58 50.8, 50.8 58, 42 58 C 33.2 58, 26 50.8, 26 42 C 26 33.2, 33.2 26, 42 26 Z"/>
+              <path d="M 40 32 L 44 32 L 44 40 L 52 40 L 52 44 L 44 44 L 44 52 L 40 52 L 40 44 L 32 44 L 32 40 L 40 40 Z"/>
+            </svg>
+            <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-4 right-4 w-6 h-6"/>
+          </div>
+        </div>
+      `,
+      generalization: `
+        <div class="relative flex items-center justify-center">
+          <!-- Glowing Idea Pulse Rings -->
+          <div class="absolute -inset-10 md:-inset-14 rounded-full border-2 border-dashed border-amber-400/40 pointer-events-none" style="animation: paintOrbitSwirl 20s linear infinite;"></div>
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#383838] border-4 border-amber-500 rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center shadow-[0_0_50px_rgba(245,158,11,0.4)] relative z-10">
+            <div class="text-6xl md:text-8xl lg:text-9xl mb-3" style="animation: icon-float 3s ease-in-out infinite;">💡</div>
+            <span class="text-amber-300 text-2xl md:text-3xl lg:text-4xl font-black text-center">Generalization</span>
+          </div>
+        </div>
+      `,
+      thanks: `
+        <div class="relative flex items-center justify-center">
+          <!-- Floating Confetti Stars -->
+          <div class="absolute -top-10 -left-10 text-4xl pointer-events-none" style="animation: icon-float 2.5s ease-in-out infinite;">⭐</div>
+          <div class="absolute -top-10 -right-10 text-4xl pointer-events-none" style="animation: icon-float 2.5s ease-in-out infinite; animation-delay: 0.5s;">✨</div>
+          <div class="absolute -bottom-10 -left-10 text-4xl pointer-events-none" style="animation: icon-float 2.5s ease-in-out infinite; animation-delay: 1s;">🎉</div>
+          <div class="absolute -bottom-10 -right-10 text-4xl pointer-events-none" style="animation: icon-float 2.5s ease-in-out infinite; animation-delay: 1.5s;">🌟</div>
+
+          <div class="w-72 h-72 md:w-96 md:h-96 lg:w-[430px] lg:h-[430px] xl:w-[460px] xl:h-[460px] bg-[#383838] border-4 border-[#31a8ff] rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center shadow-2xl relative z-10">
+            <div class="text-[#31a8ff] font-black text-8xl md:text-9xl lg:text-[10rem] tracking-tighter mb-2" style="animation: icon-float 3s ease-in-out infinite;">🙌</div>
+            <span class="text-white text-3xl md:text-4xl lg:text-5xl font-black text-center">Thank You!</span>
+          </div>
+        </div>
+      `
+    };
+
+    // COMPLETE PRESENTATION SLIDES DATA (TOTAL 14 SLIDES)
+    const slides = [
+      {
+        id: 0,
+        key: 'cover',
+        watermark: 'PHOTOSHOP',
+        title: 'Adobe Photoshop Basic Tools',
+        subtitle: 'Lesson Discussion: Basic Tools & Functions',
+        hotkey: 'START',
+        definition: 'A step-by-step introduction to the 6 core Adobe Photoshop tools used for photo editing, selection, and graphic design.',
+        svg: psToolIcons.cover
+      },
+      {
+        id: 1,
+        key: 'objectives',
+        watermark: 'OBJECTIVES',
+        title: 'Learning Objectives',
+        subtitle: 'At the end of the lesson, the students should be able to:',
+        hotkey: 'GOALS',
+        objectivesList: [
+          { letter: 'A', text: 'Define Adobe Photoshop Basic Tools and explain the function of each basic Photoshop tool. Identify the different basic Photoshop tools.' },
+          { letter: 'B', text: 'Appreciate the importance of selecting the appropriate Photoshop tool for efficient and quality photo editing and graphic design.' },
+          { letter: 'C', text: 'Create a step-by-step editing plan using the basic Photoshop tools for a given real-world photo editing scenario.' }
+        ],
+        svg: psToolIcons.objectives
+      },
+      {
+        id: 2,
+        key: 'move',
+        watermark: 'MOVE TOOL',
+        title: 'Move Tool',
+        subtitle: 'Drags & Moves Items Anywhere',
+        hotkey: 'V',
+        definition: 'The Move Tool lets you click and drag pictures, shapes, or text anywhere on your canvas.',
+        bullets: [
+          '<strong>What it does:</strong> Moves layers and objects around.',
+          '<strong>When to use:</strong> Whenever you want to rearrange your design.',
+          '<strong>Shortcut:</strong> Press <code class="bg-[#007acc] text-white px-3 py-1 rounded-lg font-mono font-black text-xl border border-[#31a8ff]">V</code>'
+        ],
+        svg: psToolIcons.move
+      },
+      {
+        id: 3,
+        key: 'marquee',
+        watermark: 'MARQUEE',
+        title: 'Marquee Tool',
+        subtitle: 'Selects Box & Circle Areas',
+        hotkey: 'M',
+        definition: 'The Marquee Tool draws a dashed selection box around a part of your picture so you can edit only that area.',
+        bullets: [
+          '<strong>What it does:</strong> Selects square or oval box areas.',
+          '<strong>When to use:</strong> To copy, move, or color a box region.',
+          '<strong>Shortcut:</strong> Press <code class="bg-[#007acc] text-white px-3 py-1 rounded-lg font-mono font-black text-xl border border-[#31a8ff]">M</code>'
+        ],
+        svg: psToolIcons.marquee
+      },
+      {
+        id: 4,
+        key: 'lasso',
+        watermark: 'LASSO TOOL',
+        title: 'Lasso Tool',
+        subtitle: 'Draws Freehand Custom Outlines',
+        hotkey: 'L',
+        definition: 'The Lasso Tool works like a pencil. You draw a smooth loop around any object to select it.',
+        bullets: [
+          '<strong>What it does:</strong> Selects organic freehand shapes.',
+          '<strong>When to use:</strong> To cut out people, curved items, or objects.',
+          '<strong>Shortcut:</strong> Press <code class="bg-[#007acc] text-white px-3 py-1 rounded-lg font-mono font-black text-xl border border-[#31a8ff]">L</code>'
+        ],
+        svg: psToolIcons.lasso
+      },
+      {
+        id: 5,
+        key: 'crop',
+        watermark: 'CROP TOOL',
+        title: 'Crop Tool',
+        subtitle: 'Trims Edges & Changes Size',
+        hotkey: 'C',
+        definition: 'The Crop Tool trims away the unwanted outer edges of a picture to make it smaller or fit a new frame.',
+        bullets: [
+          '<strong>What it does:</strong> Cuts outer photo boundaries.',
+          '<strong>When to use:</strong> To remove messy backgrounds or re-frame photos.',
+          '<strong>Shortcut:</strong> Press <code class="bg-[#007acc] text-white px-3 py-1 rounded-lg font-mono font-black text-xl border border-[#31a8ff]">C</code>'
+        ],
+        svg: psToolIcons.crop
+      },
+      {
+        id: 6,
+        key: 'type',
+        watermark: 'TYPE TOOL',
+        title: 'Type Tool',
+        subtitle: 'Adds Words & Text Layers',
+        hotkey: 'T',
+        definition: 'The Type Tool lets you click anywhere on your image and type words, titles, or paragraphs.',
+        bullets: [
+          '<strong>What it does:</strong> Creates vector text layers.',
+          '<strong>When to use:</strong> Adding headlines, captions, or poster titles.',
+          '<strong>Shortcut:</strong> Press <code class="bg-[#007acc] text-white px-3 py-1 rounded-lg font-mono font-black text-xl border border-[#31a8ff]">T</code>'
+        ],
+        svg: psToolIcons.type
+      },
+      {
+        id: 7,
+        key: 'zoom',
+        watermark: 'ZOOM TOOL',
+        title: 'Zoom Tool',
+        subtitle: 'Magnifies Pictures Big or Small',
+        hotkey: 'Z',
+        definition: 'The Zoom Tool magnifies your picture view so you can edit tiny details clearly or step back to see everything.',
+        bullets: [
+          '<strong>What it does:</strong> Zooms in (+) or zooms out (-).',
+          '<strong>When to use:</strong> Working on small details like eyes or fine lines.',
+          '<strong>Shortcut:</strong> Press <code class="bg-[#007acc] text-white px-3 py-1 rounded-lg font-mono font-black text-xl border border-[#31a8ff]">Z</code>'
+        ],
+        svg: psToolIcons.zoom
+      },
+      {
+        id: 8,
+        key: 'generalization',
+        watermark: 'GENERALIZATION',
+        title: 'Generalization',
+        subtitle: 'Classroom Discussion Question',
+        hotkey: 'DISC',
+        definition: 'Based on our discussion, how do you think the existence of different Adobe Photoshop tools — each with its own specific function — has changed the way designers create and improve digital images compared to doing it manually or without any tool at all?',
+        svg: psToolIcons.generalization
+      },
+      {
+        id: 9,
+        key: 'thanks',
+        watermark: 'THANK YOU',
+        title: 'Thank You For Listening!',
+        subtitle: 'End of Tools Discussion',
+        hotkey: 'END',
+        definition: 'Thank you for your active participation! Next up: Classroom Reflection, Application & Quiz activities.',
+        bullets: [
+          '<strong>Great job learning the 6 tools!</strong>',
+          'Press <strong>Next ►</strong> to proceed to the 1-Minute Reflection.',
+          'Get your <strong>1/4 sheet of paper</strong> ready!'
+        ],
+        svg: psToolIcons.thanks
+      },
+      {
+        id: 10,
+        key: 'reflection',
+        watermark: 'REFLECTION',
+        title: 'Reflection',
+        subtitle: '1-Minute Self Reflection',
+        hotkey: 'REFL'
+      },
+      {
+        id: 11,
+        key: 'application',
+        watermark: 'APPLICATION',
+        title: 'Application',
+        subtitle: '2-Minute Real-World Bakery Scenario',
+        hotkey: 'APPL'
+      },
+      {
+        id: 12,
+        key: 'eval',
+        watermark: 'EVALUATION',
+        title: 'Evaluation Quiz',
+        subtitle: '1-Minute Quiz: Name the 5 Flashed Tools',
+        hotkey: 'QUIZ'
+      },
+      {
+        id: 13,
+        key: 'assignment',
+        watermark: 'ASSIGNMENT',
+        title: 'Assignment',
+        subtitle: 'Search 5 Additional Photoshop Tools',
+        hotkey: 'HOMEWORK'
+      }
+    ];
+
+    // STATE & TRANSITION CONTROLLER
+    let currentIndex = 0;
+    let isSideState = false;
+    let currentDirection = 1; // 1 = forward (right to left), -1 = backward (left to right)
+    let autoPlayTimer = null;
+    let isAutoPlaying = false;
+    let activityTimer = null;
+    let activitySeconds = 60;
+
+    // DOM ELEMENTS
+    const laserSweep = document.getElementById('laser-sweep');
+    const shockwaveRing = document.getElementById('shockwave-ring');
+    const watermarkText = document.getElementById('watermark-text');
+    const standardStage = document.getElementById('standard-stage');
+    const activityStage = document.getElementById('activity-stage');
+    const toolHero = document.getElementById('tool-hero');
+    const graphicBox = document.getElementById('graphic-box');
+    const defCard = document.getElementById('def-card');
+    const revealDefBtn = document.getElementById('reveal-def-btn');
+    const slideCount = document.getElementById('slide-count');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const thumbStrip = document.getElementById('thumb-strip');
+
+    // TRANSITION FX TRIGGERS
+    function triggerLaserSweep(dir = 1) {
+      if (!laserSweep) return;
+      laserSweep.classList.remove('anim-laser-forward', 'anim-laser-backward');
+      void laserSweep.offsetWidth; // Force Reflow
+      laserSweep.classList.add(dir >= 0 ? 'anim-laser-forward' : 'anim-laser-backward');
+    }
+
+    function triggerShockwave() {
+      if (!shockwaveRing) return;
+      shockwaveRing.classList.remove('anim-shockwave');
+      void shockwaveRing.offsetWidth; // Force Reflow
+      shockwaveRing.classList.add('anim-shockwave');
+    }
+
+    // TYPEWRITER ENGINE (TYPES & ERASES "HELLO WORLD" CONTINUOUSLY)
+    let typewriterInterval = null;
+    let typewriterTimeout = null;
+
+    function stopTypewriter() {
+      if (typewriterInterval) clearInterval(typewriterInterval);
+      if (typewriterTimeout) clearTimeout(typewriterTimeout);
+      typewriterInterval = null;
+      typewriterTimeout = null;
+    }
+
+    function runTypewriter() {
+      stopTypewriter();
+      const target = document.getElementById('typewriter-text');
+      if (!target) return;
+
+      const phrase = "HELLO WORLD";
+      let curLength = 0;
+      let isBackspacing = false;
+      target.textContent = "";
+
+      function step() {
+        const el = document.getElementById('typewriter-text');
+        if (!el) {
+          stopTypewriter();
+          return;
+        }
+
+        if (!isBackspacing) {
+          curLength++;
+          el.textContent = phrase.substring(0, curLength);
+          if (curLength >= phrase.length) {
+            isBackspacing = true;
+            clearInterval(typewriterInterval);
+            typewriterTimeout = setTimeout(() => {
+              typewriterInterval = setInterval(step, 80); // Fast erasing speed
+            }, 1400); // Pause to read "HELLO WORLD"
+            return;
+          }
+        } else {
+          curLength--;
+          el.textContent = phrase.substring(0, curLength);
+          if (curLength <= 0) {
+            isBackspacing = false;
+            clearInterval(typewriterInterval);
+            typewriterTimeout = setTimeout(() => {
+              typewriterInterval = setInterval(step, 130); // Typing speed
+            }, 500); // Pause before re-typing
+            return;
+          }
+        }
+      }
+
+      typewriterInterval = setInterval(step, 130);
+    }
+
+    function buildUI() {
+      thumbStrip.innerHTML = slides.map((s, idx) => `
+        <button onclick="goToSlide(${idx}, false, ${idx >= currentIndex ? 1 : -1})" class="w-7 h-7 md:w-8 md:h-8 rounded-lg font-mono text-[11px] md:text-xs font-bold transition flex items-center justify-center border shrink-0 ${idx === currentIndex ? 'bg-[#007acc] text-white border-[#31a8ff] shadow-[0_0_10px_#31a8ff] scale-105' : 'bg-[#141418] text-gray-400 border-[#282836] hover:bg-[#202028] hover:text-white'}" title="Slide ${idx + 1}">
+          ${idx + 1}
+        </button>
+      `).join('');
+    }
+
+    // SLIDE RENDER CONTROLLER (3D PARALLAX & CINEMATIC MORPH)
+    function goToSlide(index, forceSide = false, dir = null) {
+      if (dir !== null) {
+        currentDirection = dir;
+      } else if (index !== currentIndex) {
+        currentDirection = (index >= currentIndex) ? 1 : -1;
+      }
+
+      currentIndex = index;
+      const slide = slides[index];
+
+      // Trigger Laser Shutter Flare
+      triggerLaserSweep(currentDirection);
+
+      // Trigger Watermark Kinetic Drift
+      watermarkText.classList.remove('watermark-morph');
+      void watermarkText.offsetWidth;
+      watermarkText.classList.add('watermark-morph');
+      watermarkText.textContent = slide.watermark;
+
+      // Activity Slides (Reflection, Application, Quiz, Assignment)
+      if (index >= 10) {
+        stopTypewriter();
+        standardStage.classList.add('hidden');
+        activityStage.classList.remove('hidden');
+
+        // Apply 3D Entry Parallax to Activity Stage
+        activityStage.classList.remove('anim-slide-in-right', 'anim-slide-in-left');
+        void activityStage.offsetWidth;
+        activityStage.classList.add(currentDirection >= 0 ? 'anim-slide-in-right' : 'anim-slide-in-left');
+
+        slideCount.textContent = `${index + 1} / ${slides.length}`;
+        prevBtn.disabled = false;
+        nextBtn.disabled = (index === slides.length - 1);
+
+        renderActivitySlide(index);
+        buildUI();
+        return;
+      }
+
+      standardStage.classList.remove('hidden');
+      activityStage.classList.add('hidden');
+
+      // Apply 3D Entry Parallax to Standard Stage
+      standardStage.classList.remove('anim-slide-in-right', 'anim-slide-in-left');
+      void standardStage.offsetWidth;
+      standardStage.classList.add(currentDirection >= 0 ? 'anim-slide-in-right' : 'anim-slide-in-left');
+
+      // Update & Trigger Kinetic Morph Pop on Tool Icon Box
+      graphicBox.innerHTML = slide.svg;
+      graphicBox.classList.remove('anim-icon-morph');
+      void graphicBox.offsetWidth;
+      graphicBox.classList.add('anim-icon-morph');
+
+      // If Type Tool, run typewriter typing & erasing loop for HELLO WORLD!
+      if (slide.key === 'type') {
+        runTypewriter();
+      } else {
+        stopTypewriter();
+      }
+
+      const isToolSlide = (index >= 2 && index <= 7);
+
+      // COVER SLIDE (SLIDE 0) SPECIAL RENDER
+      if (index === 0) {
+        defCard.innerHTML = `
+          <div class="space-y-4 md:space-y-6">
+            <div class="border-b-2 border-[#282836] pb-3 md:pb-5 stagger-item stagger-1">
+              <span class="bg-[#007acc] text-white font-black text-sm md:text-base lg:text-lg px-5 py-1.5 rounded-full uppercase tracking-wider shadow border border-[#31a8ff]">
+                Lesson Topic
+              </span>
+              <h2 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white tracking-tight mt-2.5 drop-shadow-lg">${slide.title}</h2>
+              <p class="text-[#31a8ff] text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black mt-1.5 drop-shadow">${slide.subtitle}</p>
+            </div>
+
+            <div class="bg-[#09090b] border-2 border-[#282836] p-5 md:p-7 lg:p-8 rounded-3xl shadow-inner stagger-item stagger-2">
+              <p class="text-white text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-relaxed">"${slide.definition}"</p>
+            </div>
+          </div>
+        `;
+      }
+      // OBJECTIVES SLIDE (SLIDE 1) SPECIAL RENDER
+      else if (index === 1) {
+        defCard.innerHTML = `
+          <div class="space-y-3.5 md:space-y-5">
+            <div class="border-b-2 border-[#282836] pb-2.5 md:pb-4 stagger-item stagger-1">
+              <span class="bg-[#007acc] text-white font-black text-sm md:text-base lg:text-lg px-5 py-1.5 rounded-full uppercase tracking-wider shadow">
+                Learning Outcomes
+              </span>
+              <h2 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white tracking-tight mt-2 drop-shadow">${slide.title}</h2>
+              <p class="text-[#31a8ff] text-lg md:text-2xl lg:text-3xl font-black mt-1">${slide.subtitle}</p>
+            </div>
+
+            <div class="space-y-3 md:space-y-4 stagger-item stagger-2">
+              ${slide.objectivesList.map(obj => `
+                <div class="flex items-start gap-3.5 md:gap-5 bg-[#09090b]/90 p-3.5 md:p-5 rounded-2xl border-2 border-[#282836] shadow-md">
+                  <span class="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-2xl bg-[#007acc] text-white font-mono font-black text-xl md:text-2xl lg:text-3xl flex items-center justify-center shrink-0 shadow border border-[#31a8ff]">
+                    ${obj.letter}
+                  </span>
+                  <div class="text-gray-100 text-base md:text-xl lg:text-2xl xl:text-3xl font-bold leading-snug self-center">${obj.text}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } 
+      // GENERALIZATION SLIDE (SLIDE 8) SPECIAL RENDER
+      else if (index === 8) {
+        defCard.innerHTML = `
+          <div class="space-y-3.5 md:space-y-5">
+            <div class="border-b-2 border-[#282836] pb-2.5 md:pb-4 stagger-item stagger-1">
+              <span class="bg-amber-500 text-black font-black text-sm md:text-base lg:text-lg px-5 py-1.5 rounded-full uppercase tracking-wider shadow">
+                Discussion
+              </span>
+              <h2 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white tracking-tight mt-2 drop-shadow">${slide.title}</h2>
+              <p class="text-amber-300 text-lg md:text-2xl lg:text-3xl font-black mt-1">${slide.subtitle}</p>
+            </div>
+
+            <div class="bg-[#09090b] border-2 border-amber-500/50 p-5 md:p-7 lg:p-8 rounded-3xl shadow-inner stagger-item stagger-2">
+              <p class="text-white text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-relaxed">
+                "${slide.definition}"
+              </p>
+            </div>
+          </div>
+        `;
+      }
+      // STANDARD SLIDE (TOOL SLIDES & THANK YOU)
+      else {
+        const isRightSidePop = (index % 2 === 0);
+
+        defCard.innerHTML = `
+          <div class="space-y-3 md:space-y-4">
+            <div class="flex items-center justify-between border-b-2 border-[#282836] pb-2.5 md:pb-3 stagger-item stagger-1">
+              <div>
+                <span class="bg-[#007acc] text-white font-black text-xs md:text-sm lg:text-base px-4 py-1 rounded-full uppercase tracking-wider shadow">
+                  ${index === 9 ? 'Conclusion' : 'Tool ' + (index - 1) + ' of 6'}
+                </span>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white tracking-tight mt-1.5 drop-shadow-lg">${slide.title}</h2>
+                <p class="text-[#31a8ff] text-lg md:text-2xl lg:text-3xl xl:text-4xl font-black mt-1 drop-shadow">${slide.subtitle}</p>
+              </div>
+              
+              ${slide.hotkey ? `
+                <div class="flex flex-col items-center justify-center keycap-3d border-2 border-[#31a8ff] px-4 py-2 md:px-6 md:py-3 rounded-2xl shrink-0 shadow-[0_0_20px_rgba(49,168,255,0.4)]">
+                  <span class="text-xs md:text-sm text-gray-400 font-bold uppercase tracking-wider">Hotkey</span>
+                  <span class="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-[#31a8ff] font-mono drop-shadow-[0_0_15px_rgba(49,168,255,0.8)]">${slide.hotkey}</span>
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="bg-[#09090b] border-2 border-[#282836] p-4 md:p-5 lg:p-6 rounded-2xl md:rounded-3xl shadow-inner stagger-item stagger-2">
+              <p class="text-white text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-relaxed">"${slide.definition}"</p>
+            </div>
+
+            ${slide.bullets ? `
+              <div class="space-y-2 md:space-y-3 stagger-item stagger-3">
+                ${slide.bullets.map(b => `
+                  <div class="flex items-start gap-3 md:gap-4 bg-[#09090b]/90 p-3 md:p-4 lg:p-4.5 rounded-2xl border-2 border-[#282836]">
+                    <span class="w-3.5 h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 rounded-full bg-[#31a8ff] mt-1.5 shrink-0 shadow-[0_0_10px_#31a8ff]"></span>
+                    <div class="text-gray-100 text-base md:text-xl lg:text-2xl xl:text-3xl font-bold leading-snug">${b}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      const isRightSidePop = (index % 2 === 0);
+      if (isRightSidePop) {
+        defCard.className = "def-card-pop def-hidden-right ml-auto w-full lg:w-[62%] xl:w-[63%] bg-[#141418]/95 backdrop-blur-2xl border-4 border-[#282836] p-5 md:p-7 lg:p-8 xl:p-9 rounded-3xl shadow-[0_30px_80px_rgba(0,0,0,0.9)] z-30 max-h-[86vh] overflow-y-auto";
+      } else {
+        defCard.className = "def-card-pop def-hidden-left mr-auto w-full lg:w-[62%] xl:w-[63%] bg-[#141418]/95 backdrop-blur-2xl border-4 border-[#282836] p-5 md:p-7 lg:p-8 xl:p-9 rounded-3xl shadow-[0_30px_80px_rgba(0,0,0,0.9)] z-30 max-h-[86vh] overflow-y-auto";
+      }
+
+      // Hide reveal button for Non-Tool slides (0, 1, 8, 9), show card directly!
+      if (!isToolSlide) {
+        setSideState(true);
+        revealDefBtn.classList.add('hidden');
+      } else {
+        setSideState(forceSide);
+      }
+
+      slideCount.textContent = `${index + 1} / ${slides.length}`;
+      prevBtn.disabled = (index === 0 && !isSideState);
+      nextBtn.disabled = false;
+
+      buildUI();
+    }
+
+    // RENDER ACTIVITY SLIDES WITH GIANT READABLE TEXT
+    function renderActivitySlide(index) {
+      clearInterval(activityTimer);
+
+      if (index === 10) {
+        // ELABORATE (REFLECTION) SLIDE - 1 MINUTE TIMER DEFAULT
+        activityStage.innerHTML = `
+          <div class="bg-[#141418] border-4 border-[#282836] p-6 lg:p-8 rounded-3xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-3 mb-1.5">
+                <span class="bg-[#007acc] text-white font-black text-sm lg:text-lg px-6 py-2 rounded-full uppercase tracking-wider shadow border border-[#31a8ff]">ELABORATE</span>
+                <span class="bg-[#282836] text-amber-300 font-mono text-sm lg:text-lg font-bold px-5 py-2 rounded-xl border border-amber-500/40">1/4 Sheet of Paper</span>
+              </div>
+              <h2 class="text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tight">Reflection</h2>
+            </div>
+
+            <div class="bg-[#09090b] border-4 border-[#31a8ff] p-5 lg:p-7 rounded-3xl flex items-center gap-6 shadow-[0_0_30px_rgba(0,122,204,0.5)] shrink-0">
+              <div class="text-center">
+                <span class="text-xs lg:text-base text-gray-400 font-extrabold uppercase block tracking-wider">Timer</span>
+                <span id="act-timer-display" class="text-5xl lg:text-7xl font-black text-[#31a8ff] font-mono tracking-wider">01:00</span>
+              </div>
+              <button onclick="startCustomTimer(60)" class="bg-[#007acc] hover:bg-[#31a8ff] text-white px-7 py-3.5 rounded-2xl font-black text-base lg:text-xl shadow-xl transition transform hover:scale-105 active:scale-95 border-2 border-[#31a8ff]">
+                Start 1 Min
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-[#09090b] border-4 border-[#31a8ff]/40 p-7 lg:p-10 rounded-3xl shadow-2xl space-y-6">
+            <div class="bg-[#141418] border-2 border-[#282836] p-5 lg:p-7 rounded-2xl text-amber-300 text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug shadow-inner">
+              <strong>Instructions:</strong> Write your answer in 1/4 sheet of paper with 2-3 sentences and answer this question in 1 minute.
+            </div>
+
+            <div class="bg-[#141418] border-4 border-[#31a8ff]/40 p-7 lg:p-10 rounded-3xl text-white text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-relaxed shadow-2xl">
+              "What did you learn about the basic Adobe Photoshop tools, and how do you think these tools can help you in creating or editing digital images?"
+            </div>
+          </div>
+        `;
+      } else if (index === 11) {
+        // EVALUATE (APPLICATION) SLIDE - 2 MINUTE TIMER DEFAULT
+        activityStage.innerHTML = `
+          <div class="bg-[#141418] border-4 border-[#282836] p-6 lg:p-8 rounded-3xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-3 mb-1.5">
+                <span class="bg-purple-600 text-white font-black text-sm lg:text-lg px-6 py-2 rounded-full uppercase tracking-wider shadow border border-purple-400">EVALUATE</span>
+                <span class="bg-[#282836] text-amber-300 font-mono text-sm lg:text-lg font-bold px-5 py-2 rounded-xl border border-amber-500/40">1/2 Crosswise</span>
+              </div>
+              <h2 class="text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tight">Application</h2>
+            </div>
+
+            <div class="bg-[#09090b] border-4 border-[#31a8ff] p-5 lg:p-7 rounded-3xl flex items-center gap-6 shadow-[0_0_30px_rgba(0,122,204,0.5)] shrink-0">
+              <div class="text-center">
+                <span class="text-xs lg:text-base text-gray-400 font-extrabold uppercase block tracking-wider">Timer</span>
+                <span id="act-timer-display" class="text-5xl lg:text-7xl font-black text-[#31a8ff] font-mono tracking-wider">02:00</span>
+              </div>
+              <button onclick="startCustomTimer(120)" class="bg-purple-600 hover:bg-purple-500 text-white px-7 py-3.5 rounded-2xl font-black text-base lg:text-xl shadow-xl transition transform hover:scale-105 active:scale-95 border-2 border-purple-400">
+                Start 2 Min
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-[#09090b] border-4 border-purple-500/40 p-7 lg:p-10 rounded-3xl shadow-2xl space-y-6">
+            <div class="bg-[#141418] border-2 border-[#282836] p-5 lg:p-7 rounded-2xl text-purple-300 text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug shadow-inner">
+              <strong>Directions:</strong> Read the scenario below. On your 1/2 crosswise, write a step-by-step editing plan. Number your steps and identify which specific Photoshop tool you will use for each step.
+            </div>
+
+            <div class="text-white text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-relaxed bg-[#141418] border-4 border-[#282836] p-7 lg:p-10 rounded-3xl shadow-2xl">
+              <strong class="text-amber-300">Scenario:</strong> A local bakery owner gave you a raw photo of their cake product. The photo has too much empty space around the cake, the background is cluttered, and the owner wants the text <strong class="text-[#31a8ff]">'Best Cake in Town!'</strong> added to the image.
+            </div>
+          </div>
+        `;
+      } else if (index === 12) {
+        // APPLICATION (EVALUATION) SLIDE - QUIZ (1 MINUTE TIMER DEFAULT)
+        activityStage.innerHTML = `
+          <div class="bg-[#141418] border-4 border-[#282836] p-6 lg:p-8 rounded-3xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-3 mb-1.5">
+                <span class="bg-amber-500 text-black font-black text-sm lg:text-lg px-6 py-2 rounded-full uppercase tracking-wider shadow">APPLICATION</span>
+                <span class="bg-[#282836] text-amber-300 font-mono text-sm lg:text-lg font-bold px-5 py-2 rounded-xl border border-amber-500/40">1/4 Sheet of Paper</span>
+              </div>
+              <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight">Evaluation Quiz</h2>
+            </div>
+
+            <div class="bg-[#09090b] border-4 border-[#31a8ff] p-5 lg:p-7 rounded-3xl flex items-center gap-6 shadow-[0_0_30px_rgba(0,122,204,0.5)] shrink-0">
+              <div class="text-center">
+                <span class="text-xs lg:text-base text-gray-400 font-extrabold uppercase block tracking-wider">Timer</span>
+                <span id="act-timer-display" class="text-5xl lg:text-7xl font-black text-[#31a8ff] font-mono tracking-wider">01:00</span>
+              </div>
+              <button onclick="startCustomTimer(60)" class="bg-[#007acc] hover:bg-[#31a8ff] text-white px-7 py-3.5 rounded-2xl font-black text-base lg:text-xl shadow-xl transition transform hover:scale-105 active:scale-95 border-2 border-[#31a8ff]">
+                Start 1 Min
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-[#141418] border-2 border-[#282836] p-5 lg:p-6 rounded-2xl text-amber-300 text-xl md:text-2xl lg:text-3xl font-extrabold leading-snug">
+            <strong>Directions:</strong> On your 1/4 sheet of paper, write the name of each tool on your paper as the icon is displayed on the screen.
+          </div>
+
+          <!-- 5 AUTHENTIC PHOTOSHOP TOOL ICON FLASH CARDS -->
+          <div class="grid grid-cols-5 gap-4 lg:gap-6 my-3 lg:my-5">
+            <!-- Icon 1: Move Tool -->
+            <div class="bg-[#3a3a3a] border-4 border-[#5a5a5a] p-5 lg:p-7 rounded-3xl flex flex-col items-center justify-center relative shadow-xl group hover:border-[#31a8ff]">
+              <span class="absolute top-3 left-3 bg-[#007acc] text-white font-black text-base lg:text-xl w-9 h-9 lg:w-11 lg:h-11 rounded-full flex items-center justify-center shadow">1</span>
+              <svg class="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 text-white group-hover:scale-110 transition drop-shadow-md" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M50 12 L38 28 L46 28 L46 46 L28 46 L28 38 L12 50 L28 62 L28 54 L46 54 L46 72 L38 72 L50 88 L62 72 L54 72 L54 54 L72 54 L72 62 L88 50 L72 38 L72 46 L54 46 L54 28 L62 28 Z"/>
+              </svg>
+              <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-3 right-3 w-5 h-5"/>
+            </div>
+
+            <!-- Icon 2: Crop Tool -->
+            <div class="bg-[#3a3a3a] border-4 border-[#5a5a5a] p-5 lg:p-7 rounded-3xl flex flex-col items-center justify-center relative shadow-xl group hover:border-[#31a8ff]">
+              <span class="absolute top-3 left-3 bg-[#007acc] text-white font-black text-base lg:text-xl w-9 h-9 lg:w-11 lg:h-11 rounded-full flex items-center justify-center shadow">2</span>
+              <svg class="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 text-white group-hover:scale-110 transition drop-shadow-md" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M 28 15 L 36 15 L 36 28 L 72 28 C 76 28, 78 30, 78 34 L 78 70 L 90 70 L 90 78 L 78 78 L 78 90 L 70 90 L 70 78 L 34 78 C 30 78, 28 76, 28 72 L 28 36 L 15 36 L 15 28 L 28 28 Z M 36 36 L 36 70 L 70 70 L 70 36 Z"/>
+              </svg>
+              <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-3 right-3 w-5 h-5"/>
+            </div>
+
+            <!-- Icon 3: Type Tool -->
+            <div class="bg-[#3a3a3a] border-4 border-[#5a5a5a] p-5 lg:p-7 rounded-3xl flex flex-col items-center justify-center relative shadow-xl group hover:border-[#31a8ff]">
+              <span class="absolute top-3 left-3 bg-[#007acc] text-white font-black text-base lg:text-xl w-9 h-9 lg:w-11 lg:h-11 rounded-full flex items-center justify-center shadow">3</span>
+              <svg class="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 text-white group-hover:scale-110 transition drop-shadow-md" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M 18 20 L 82 20 L 82 36 L 68 36 L 56 36 L 56 82 L 44 82 L 44 36 L 32 36 L 18 36 Z"/>
+              </svg>
+              <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-3 right-3 w-5 h-5"/>
+            </div>
+
+            <!-- Icon 4: Marquee Tool -->
+            <div class="bg-[#3a3a3a] border-4 border-[#5a5a5a] p-5 lg:p-7 rounded-3xl flex flex-col items-center justify-center relative shadow-xl group hover:border-[#31a8ff]">
+              <span class="absolute top-3 left-3 bg-[#007acc] text-white font-black text-base lg:text-xl w-9 h-9 lg:w-11 lg:h-11 rounded-full flex items-center justify-center shadow">4</span>
+              <svg class="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 text-white group-hover:scale-110 transition drop-shadow-md" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+                <rect x="20" y="25" width="60" height="50" rx="4" stroke-width="7" stroke-dasharray="10 8"/>
+              </svg>
+              <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-3 right-3 w-5 h-5"/>
+            </div>
+
+            <!-- Icon 5: Zoom Tool -->
+            <div class="bg-[#3a3a3a] border-4 border-[#5a5a5a] p-5 lg:p-7 rounded-3xl flex flex-col items-center justify-center relative shadow-xl group hover:border-[#31a8ff]">
+              <span class="absolute top-3 left-3 bg-[#007acc] text-white font-black text-base lg:text-xl w-9 h-9 lg:w-11 lg:h-11 rounded-full flex items-center justify-center shadow">5</span>
+              <svg class="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 text-white group-hover:scale-110 transition drop-shadow-md" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M 42 16 C 27.6 16, 16 27.6, 16 42 C 16 56.4, 27.6 68, 42 68 C 47.5 68, 52.6 66.3, 56.8 63.4 L 78.4 85 C 80.3 86.9, 83.5 86.9, 85.4 85 L 85 85 C 86.9 83.1, 86.9 79.9, 85 78 L 63.4 56.4 C 66.3 52.2, 68 47.1, 68 42 C 68 27.6, 56.4 16, 42 16 Z M 42 26 C 50.8 26, 58 33.2, 58 42 C 58 50.8, 50.8 58, 42 58 C 33.2 58, 26 50.8, 26 42 C 26 33.2, 33.2 26, 42 26 Z"/>
+                <path d="M 40 32 L 44 32 L 44 40 L 52 40 L 52 44 L 44 44 L 44 52 L 40 52 L 40 44 L 32 44 L 32 40 L 40 40 Z"/>
+              </svg>
+              <polygon points="90,90 98,98 82,98" fill="#aaaaaa" class="absolute bottom-3 right-3 w-5 h-5"/>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end bg-[#141418] border-2 border-[#282836] p-4 lg:p-5 rounded-2xl">
+            <button onclick="toggleAnswerKey()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-lg lg:text-xl px-7 py-3.5 rounded-xl transition shadow-xl border-2 border-emerald-400">
+              Reveal Answer Key
+            </button>
+          </div>
+
+          <div id="answer-key-box" class="hidden bg-emerald-950/90 border-4 border-emerald-500 p-5 lg:p-6 rounded-2xl text-emerald-100 text-xl lg:text-3xl font-mono font-bold shadow-2xl">
+            <strong>Answer Key:</strong> 1. Move Tool | 2. Crop Tool | 3. Type Tool | 4. Marquee Tool | 5. Zoom Tool
+          </div>
+        `;
+      } else if (index === 13) {
+        // EXTEND (ASSIGNMENT) SLIDE
+        activityStage.innerHTML = `
+          <div class="bg-[#141418] border-4 border-[#282836] p-6 lg:p-8 rounded-3xl shadow-2xl flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-1.5">
+                <span class="bg-blue-600 text-white font-black text-sm lg:text-lg px-6 py-2 rounded-full uppercase tracking-wider shadow border border-blue-400">EXTEND</span>
+                <span class="bg-[#282836] text-amber-300 font-mono text-sm lg:text-lg font-bold px-5 py-2 rounded-xl border border-amber-500/40">1/2 Crosswise</span>
+              </div>
+              <h2 class="text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tight">Assignment</h2>
+            </div>
+            
+            <div class="bg-[#09090b] border-4 border-[#31a8ff] p-5 lg:p-6 rounded-3xl text-center shadow-xl">
+              <span class="text-5xl md:text-6xl">📚</span>
+            </div>
+          </div>
+
+          <div class="bg-[#09090b] border-4 border-[#31a8ff]/40 p-7 lg:p-10 rounded-3xl shadow-2xl space-y-6">
+            <div class="bg-[#141418] border-2 border-[#282836] p-7 lg:p-9 rounded-2xl text-blue-300 text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-relaxed shadow-inner">
+              <strong>Instructions:</strong> Search for five (5) additional Photoshop tools that were not discussed today. Write the name of each tool, its keyboard shortcut (if applicable), and explain its function in one to two sentences. Write your answers on a 1/2 crosswise sheet of paper.
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // SET STAGE STATE FOR TOOL SLIDES
+    function setSideState(side) {
+      isSideState = side;
+      const isRightSidePop = (currentIndex % 2 === 0);
+
+      if (side) {
+        // Trigger luminous cyan shockwave ring burst!
+        triggerShockwave();
+
+        if (isRightSidePop) {
+          toolHero.className = "tool-hero-container state-side-left absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none";
+          defCard.classList.remove('def-hidden-right');
+          defCard.classList.add('def-visible');
+        } else {
+          toolHero.className = "tool-hero-container state-side-right absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none";
+          defCard.classList.remove('def-hidden-left');
+          defCard.classList.add('def-visible');
+        }
+        revealDefBtn.classList.add('hidden');
+      } else {
+        toolHero.className = "tool-hero-container state-centered absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none";
+        defCard.classList.remove('def-visible');
+        if (isRightSidePop) defCard.classList.add('def-hidden-right');
+        else defCard.classList.add('def-hidden-left');
+        revealDefBtn.classList.remove('hidden');
+      }
+    }
+
+    // BUTTON ACTIONS
+    revealDefBtn.addEventListener('click', () => setSideState(true));
+
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex >= 10) {
+        if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1, false, 1);
+        return;
+      }
+
+      const isToolSlide = (currentIndex >= 2 && currentIndex <= 7);
+
+      if (isToolSlide && !isSideState) {
+        setSideState(true);
+      } else {
+        if (currentIndex < slides.length - 1) {
+          goToSlide(currentIndex + 1, false, 1);
+        }
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex >= 10) {
+        goToSlide(currentIndex - 1, false, -1);
+        return;
+      }
+
+      const isToolSlide = (currentIndex >= 2 && currentIndex <= 7);
+
+      if (isToolSlide && isSideState) {
+        setSideState(false);
+      } else {
+        if (currentIndex > 0) {
+          goToSlide(currentIndex - 1, true, -1);
+        }
+      }
+    });
+
+    // TIMER HELPERS (BRISK & SMOOTH COUNTDOWN TICK RATE - SAKTO LANG)
+    function startCustomTimer(duration) {
+      clearInterval(activityTimer);
+      activitySeconds = duration;
+      const display = document.getElementById('act-timer-display');
+
+      const updateDisplay = () => {
+        const mins = String(Math.floor(activitySeconds / 60)).padStart(2, '0');
+        const secs = String(activitySeconds % 60).padStart(2, '0');
+        if (display) display.textContent = `${mins}:${secs}`;
+      };
+
+      updateDisplay();
+
+      activityTimer = setInterval(() => {
+        activitySeconds--;
+        updateDisplay();
+
+        if (activitySeconds <= 0) {
+          clearInterval(activityTimer);
+          if (display) display.textContent = "00:00 TIME UP!";
+        }
+      }, 880); // Brisk 880ms interval tick rate
+    }
+
+    function toggleAnswerKey() {
+      const box = document.getElementById('answer-key-box');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    // KEYBOARD NAVIGATION
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextBtn.click();
+      } else if (e.key === 'ArrowLeft') {
+        prevBtn.click();
+      }
+    });
+
+    // AUTO PLAY ENGINE
+    document.getElementById('auto-play-btn').addEventListener('click', () => {
+      isAutoPlaying = !isAutoPlaying;
+      const playText = document.getElementById('play-text');
+      if (isAutoPlaying) {
+        playText.textContent = "Pause";
+        autoPlayTimer = setInterval(() => {
+          if (currentIndex < 10) {
+            const isToolSlide = (currentIndex >= 2 && currentIndex <= 7);
+            if (isToolSlide && !isSideState) setSideState(true);
+            else goToSlide(currentIndex + 1, false);
+          } else {
+            if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+            else goToSlide(0, false);
+          }
+        }, 3500);
+      } else {
+        playText.textContent = "Auto Play";
+        clearInterval(autoPlayTimer);
+      }
+    });
+
+    // INITIALIZE
+    goToSlide(0, false);
+  </script>
+</body>
+</html>
